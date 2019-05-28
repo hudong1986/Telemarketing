@@ -1,0 +1,272 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="telemarketing.repository.Pt_userMapper">
+	<resultMap id="BaseResultMap" type="telemarketing.model.Pt_user">
+		<id column="id" property="id" jdbcType="INTEGER" />
+		<result column="phone" property="phone" jdbcType="VARCHAR" />
+		<result column="user_pwd" property="userPwd" jdbcType="VARCHAR" />
+		<result column="real_name" property="realName" jdbcType="VARCHAR" />
+		<result column="pic_url" property="picUrl" jdbcType="VARCHAR" />
+		<result column="sex" property="sex" jdbcType="BIT" />
+		<result column="add_time" property="addTime" jdbcType="TIMESTAMP" />
+		<result column="login_time" property="loginTime" jdbcType="TIMESTAMP" />
+		<result column="state" property="state" jdbcType="TINYINT" />
+		<result column="up_down_id" property="upDownId" jdbcType="VARCHAR" />
+		<association property="deptId" javaType="telemarketing.model.Pt_dept">
+			<id column="dept_id" property="id" />
+			 <result column="dept_name" property="deptName" jdbcType="VARCHAR" />
+   			 <result column="parent_id" property="parentId" jdbcType="INTEGER" />
+   			 <result column="up_down_id" property="upDownId" jdbcType="VARCHAR" />
+		</association>
+
+		<association property="roleCode" javaType="telemarketing.model.Pt_role">
+			<id column="role_code" property="roleCode" jdbcType="VARCHAR" />
+    		<result column="role_name" property="roleName" jdbcType="VARCHAR" />
+		</association>
+	</resultMap>
+	<sql id="Base_Column_List">
+		id,phone, user_pwd, role_code, dept_id, real_name, pic_url, sex, add_time,
+		login_time,
+		state, up_down_id
+	</sql>
+	
+	<select id="searchBySql" resultMap="BaseResultMap"
+		parameterType="java.lang.String" statementType="STATEMENT">
+		 <![CDATA[${sql}]]>
+
+	</select>
+	
+	<select id="selectByPrimaryKey" resultMap="BaseResultMap"
+		parameterType="java.lang.Integer">
+		select
+		pt_user.*,pt_role.role_name,pt_dept.dept_name,pt_dept.parent_id
+		from pt_user inner join pt_role on pt_user.role_code=pt_role.role_code
+		inner join pt_dept on pt_user.dept_id=pt_dept.id
+		where pt_user.id = #{id} 
+	</select>
+	<select id="selectByPhone" resultMap="BaseResultMap"
+		parameterType="java.lang.String">
+		select
+		pt_user.*,pt_role.role_name,pt_dept.dept_name,pt_dept.parent_id
+		from pt_user inner join pt_role on pt_user.role_code=pt_role.role_code
+		inner join pt_dept on pt_user.dept_id=pt_dept.id
+		where phone = #{phone,jdbcType=VARCHAR} and  pt_user.state=0
+	</select>
+	
+	<select id="selectByDeptId" resultMap="BaseResultMap"
+		parameterType="java.lang.Integer">
+		select
+		pt_user.*,pt_role.role_name,pt_dept.dept_name,pt_dept.parent_id
+		from pt_user inner join pt_role on pt_user.role_code=pt_role.role_code
+		inner join pt_dept on pt_user.dept_id=pt_dept.id
+		where dept_id = #{deptId} and  pt_user.state=0
+	</select>
+	
+	<select id="selectByUpDownId" resultMap="BaseResultMap"
+		parameterType="java.lang.Integer">
+		select
+		pt_user.*,pt_role.role_name,pt_dept.dept_name,pt_dept.parent_id
+		from pt_user inner join pt_role on pt_user.role_code=pt_role.role_code
+		inner join pt_dept on pt_user.dept_id=pt_dept.id
+		where pt_user.up_down_id like <![CDATA['%${up_down_id}%' ]]> and  pt_user.state=0
+	</select>
+	
+	
+	
+	<select id="selectByDeptAndRole" resultMap="BaseResultMap" >
+		select
+		pt_user.*,pt_role.role_name,pt_dept.dept_name,pt_dept.parent_id 
+		from pt_user inner join pt_role on pt_user.role_code=pt_role.role_code
+		inner join pt_dept on pt_user.dept_id=pt_dept.id
+		where pt_user.role_code = #{role,jdbcType=VARCHAR} and  pt_user.state=0
+		and pt_user.up_down_id like <![CDATA['%${up_down_id}%' ]]>
+
+	</select>
+	
+	
+	<delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+		delete from pt_user
+		where id = #{id}
+	</delete>
+	<insert id="insert" parameterType="telemarketing.model.Pt_user" useGeneratedKeys="true" keyProperty="id">
+		insert into pt_user (phone, user_pwd, role_code,
+		dept_id, real_name, pic_url,
+		sex, add_time, login_time,
+		state, up_down_id)
+		values (#{phone,jdbcType=VARCHAR}, #{userPwd,jdbcType=VARCHAR},
+		#{roleCode.roleCode,jdbcType=VARCHAR},
+		#{deptId.id,jdbcType=INTEGER}, #{realName,jdbcType=VARCHAR}, #{picUrl,jdbcType=VARCHAR},
+		#{sex,jdbcType=BIT}, #{addTime,jdbcType=TIMESTAMP},
+		#{loginTime,jdbcType=TIMESTAMP},
+		#{state,jdbcType=TINYINT}, #{upDownId,jdbcType=VARCHAR})
+	</insert>
+	<insert id="insertSelective" parameterType="telemarketing.model.Pt_user">
+		insert into pt_user
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="phone != null">
+				phone,
+			</if>
+			<if test="userPwd != null">
+				user_pwd,
+			</if>
+			<if test="roleCode != null">
+				role_code,
+			</if>
+			<if test="deptId != null">
+				dept_id,
+			</if>
+			<if test="realName != null">
+				real_name,
+			</if>
+			<if test="picUrl != null">
+				pic_url,
+			</if>
+			<if test="sex != null">
+				sex,
+			</if>
+			<if test="addTime != null">
+				add_time,
+			</if>
+			<if test="loginTime != null">
+				login_time,
+			</if>
+			<if test="state != null">
+				state,
+			</if>
+			<if test="upDownId != null">
+				up_down_id,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="phone != null">
+				#{phone,jdbcType=VARCHAR},
+			</if>
+			<if test="userPwd != null">
+				#{userPwd,jdbcType=VARCHAR},
+			</if>
+			<if test="roleCode != null">
+				#{roleCode.roleCode,jdbcType=VARCHAR},
+			</if>
+			<if test="deptId != null">
+				#{deptId.id,jdbcType=INTEGER},
+			</if>
+			<if test="realName != null">
+				#{realName,jdbcType=VARCHAR},
+			</if>
+			<if test="picUrl != null">
+				#{picUrl,jdbcType=VARCHAR},
+			</if>
+			<if test="sex != null">
+				#{sex,jdbcType=BIT},
+			</if>
+			<if test="addTime != null">
+				#{addTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="loginTime != null">
+				#{loginTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="state != null">
+				#{state,jdbcType=TINYINT},
+			</if>
+			<if test="upDownId != null">
+				#{upDownId,jdbcType=VARCHAR},
+			</if>
+		</trim>
+	</insert>
+	<update id="updateByPrimaryKeySelective" parameterType="telemarketing.model.Pt_user">
+		update pt_user
+		<set>
+			<if test="userPwd != null">
+				user_pwd = #{userPwd,jdbcType=VARCHAR},
+			</if>
+			<if test="roleCode != null">
+				role_code = #{roleCode.roleCode,jdbcType=VARCHAR},
+			</if>
+			<if test="deptId != null">
+				dept_id = #{deptId.id,jdbcType=INTEGER},
+			</if>
+			<if test="realName != null">
+				real_name = #{realName,jdbcType=VARCHAR},
+			</if>
+			<if test="picUrl != null">
+				pic_url = #{picUrl,jdbcType=VARCHAR},
+			</if>
+			<if test="sex != null">
+				sex = #{sex,jdbcType=BIT},
+			</if>
+			<if test="addTime != null">
+				add_time = #{addTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="loginTime != null">
+				login_time = #{loginTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="state != null">
+				state = #{state,jdbcType=TINYINT},
+			</if>
+			<if test="upDownId != null">
+				up_down_id = #{upDownId,jdbcType=VARCHAR},
+			</if>
+		</set>
+		where id = #{id}
+	</update>
+	<update id="updateByPrimaryKey" parameterType="telemarketing.model.Pt_user">
+		update pt_user
+		set user_pwd = #{userPwd,jdbcType=VARCHAR},
+		role_code = #{roleCode.roleCode,jdbcType=VARCHAR},
+		dept_id = #{deptId.id,jdbcType=INTEGER},
+		real_name = #{realName,jdbcType=VARCHAR},
+		pic_url = #{picUrl,jdbcType=VARCHAR},
+		sex = #{sex,jdbcType=BIT},
+		add_time = #{addTime,jdbcType=TIMESTAMP},
+		login_time = #{loginTime,jdbcType=TIMESTAMP},
+		state = #{state,jdbcType=TINYINT},
+		up_down_id = #{upDownId,jdbcType=VARCHAR}
+		where id = #{id}
+	</update>
+	
+	<update id="updateLeaveMore" >
+		update pt_user
+		set state = 1
+		where id in
+		<foreach item="item" index="index" collection="list" open="("
+            separator="," close=")">
+		  #{item}
+		</foreach>
+	</update>
+	
+	<update id="updateOnWorkMore" >
+		update pt_user
+		set state = 0
+		where id in
+		<foreach item="item" index="index" collection="list" open="("
+            separator="," close=")">
+		  #{item}
+		</foreach>
+	</update>
+	
+	<update id="leaveMoreAndBackCustomer" >
+		update customer
+		 set  recovery_from=who_use_name,
+		 who_use = #{who_use,jdbcType=VARCHAR},
+		 who_use_name = #{who_use_name,jdbcType=VARCHAR},
+		 who_get_time = #{who_get_time,jdbcType=TIMESTAMP},
+		 who_up_down_id = #{who_up_down_id,jdbcType=VARCHAR},
+		 has_recovery=1,
+		 recovery_time=now()
+		where is_common=0 and  who_use in
+		<foreach item="item" index="index" collection="list" open="("
+            separator="," close=")">
+		  #{item,jdbcType=VARCHAR}
+		</foreach>
+	</update>
+	
+	<update id="updateRestPwdMore" >
+		update pt_user
+		set user_pwd = #{pwd}
+		where id in
+		<foreach item="item" index="index" collection="list" open="("
+            separator="," close=")">
+		  #{item}
+		</foreach>
+	</update>
+</mapper>

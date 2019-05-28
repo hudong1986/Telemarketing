@@ -1,0 +1,90 @@
+<!DOCTYPE tiles-definitions PUBLIC
+      "-//Apache Software Foundation//DTD Tiles Configuration 3.0//EN"
+      "http://tiles.apache.org/dtds/tiles-config_3_0.dtd">
+
+<tiles-definitions>
+
+	<definition name="template" template="/WEB-INF/views/template1.jsp">
+		<put-attribute name="header" value="/WEB-INF/views/header.jsp" />
+		<put-attribute name="side" value="/WEB-INF/views/side.jsp" />
+		<put-attribute name="footer" value="/WEB-INF/views/footer.jsp" />
+	</definition>
+
+	<definition name="single_template" template="/WEB-INF/views/singlepage.jsp">
+	</definition>
+
+	<definition name="home" extends="template">
+		<put-attribute name="content" value="/WEB-INF/views/home.jsp" />
+	</definition>
+
+	<definition name="login" extends="single_template">
+		<put-attribute name="content" value="/WEB-INF/views/login.jsp" />
+	</definition>
+
+	<definition name="customer/list" extends="template">
+		<put-attribute name="content" value="/WEB-INF/views/customer/list.jsp" />
+	</definition>
+
+	<definition name="customer/my" extends="template">
+		<put-attribute name="content" value="/WEB-INF/views/customer/my.jsp" />
+	</definition>
+	
+	<definition name="customer/soundlist" extends="template">
+		<put-attribute name="content" value="/WEB-INF/views/customer/soundlist.jsp" />
+	</definition>
+	<definition name="customer/tracklist" extends="template">
+		<put-attribute name="content" value="/WEB-INF/views/customer/tracklist.jsp" />
+	</definition>
+	
+	<definition name="customer/playSound" extends="single_template">
+		<put-attribute name="content" value="/WEB-INF/views/customer/playSound.jsp" />
+	</definition>
+
+	<definition name="customer/track_record" extends="single_template">
+		<put-attribute name="content"
+			value="/WEB-INF/views/customer/track_record.jsp" />
+	</definition>
+	
+	
+	<definition name="reports/report1" extends="template">
+		<put-attribute name="content" value="/WEB-INF/views/reports/report1.jsp" />
+	</definition>
+
+	<definition name="reports/report_chart" extends="template">
+		<put-attribute name="content"
+			value="/WEB-INF/views/reports/report_chart.jsp" />
+	</definition>
+
+	<definition name="reports/report2" extends="template">
+		<put-attribute name="content" value="/WEB-INF/views/reports/report2.jsp" />
+	</definition>
+	
+	<definition name="reports/soundReport" extends="template">
+		<put-attribute name="content" value="/WEB-INF/views/reports/soundReport.jsp" />
+	</definition>
+	
+	<definition name="reports/trackReport" extends="template">
+		<put-attribute name="content" value="/WEB-INF/views/reports/trackReport.jsp" />
+	</definition>
+ 
+	<definition name="user/list" extends="template">
+		<put-attribute name="content" value="/WEB-INF/views/webuser/list.jsp" />
+	</definition>
+	
+	<definition name="user/modifyPwd" extends="template">
+		<put-attribute name="content" value="/WEB-INF/views/webuser/modifyPwd.jsp" />
+	</definition>
+	
+	<definition name="remind/list" extends="template">
+		<put-attribute name="content" value="/WEB-INF/views/remind/list.jsp" />
+	</definition>
+	
+	<definition name="login_record/list" extends="template">
+		<put-attribute name="content" value="/WEB-INF/views/webuser/loginRecord.jsp" />
+	</definition>
+	
+	<definition name="allow_ip/list" extends="template">
+		<put-attribute name="content" value="/WEB-INF/views/webuser/allow_ip.jsp" />
+	</definition>
+
+</tiles-definitions>

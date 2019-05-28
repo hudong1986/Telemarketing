@@ -1,0 +1,253 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="telemarketing.repository.CustomerMapper">
+	<resultMap id="BaseResultMap" type="telemarketing.model.Customer">
+		<id column="id" jdbcType="INTEGER" property="id" />
+		<result column="phone" jdbcType="VARCHAR" property="phone" />
+		<result column="cus_name" jdbcType="VARCHAR" property="cusName" />
+		<result column="id_person" jdbcType="VARCHAR" property="idPerson" />
+		<result column="address" jdbcType="VARCHAR" property="address" />
+		<result column="who_use" jdbcType="VARCHAR" property="whoUse" />
+		<result column="who_use_name" jdbcType="VARCHAR" property="whoUseName" />
+		<result column="who_get_time" jdbcType="TIMESTAMP" property="whoGetTime" />
+
+		<result column="share_use" jdbcType="VARCHAR" property="shareUse" />
+		<result column="share_use_name" jdbcType="VARCHAR" property="shareUseName" />
+		<result column="share_get_time" jdbcType="TIMESTAMP" property="shareGetTime" />
+
+		<result column="add_time" jdbcType="TIMESTAMP" property="addTime" />
+		<result column="update_state_time" jdbcType="TIMESTAMP"
+			property="update_state_time" />
+		<result column="remark" jdbcType="VARCHAR" property="remark" />
+		<result column="state" jdbcType="TINYINT" property="state" />
+		<result column="data_from" jdbcType="VARCHAR" property="dataFrom" />
+		<result column="who_up_down_id" jdbcType="VARCHAR" property="who_up_down_id" />
+		<result column="business_name" jdbcType="VARCHAR" property="business_name" />
+
+		<result column="is_common" jdbcType="TINYINT" property="is_common" />
+		<result column="who_put_common" jdbcType="VARCHAR" property="who_put_common" />
+		<result column="who_put_common_name" jdbcType="VARCHAR"
+			property="who_put_common_name" />
+		<result column="in_common_time" jdbcType="TIMESTAMP" property="in_common_time" />
+
+		<result column="recovery_from" jdbcType="VARCHAR" property="recovery_from" />
+
+	</resultMap>
+	<sql id="Base_Column_List">
+		id, phone, cus_name, id_person, address, who_use,
+		who_use_name,who_up_down_id,
+		who_get_time, share_use,
+		share_use_name,business_name,update_state_time,
+		share_get_time,add_time,
+		remark,
+		state,data_from,is_common,in_common_time,who_put_common,who_put_common_name
+	</sql>
+	<select id="searchBySql" resultMap="BaseResultMap"
+		parameterType="java.util.Map" statementType="STATEMENT">
+		 <![CDATA[${sql}]]>
+
+	</select>
+
+	<select id="countBySql" resultType="java.lang.Integer"
+		parameterType="java.lang.String" statementType="STATEMENT">
+		 <![CDATA[${sql}]]>
+	</select>
+
+	<select id="selectByPrimaryKey" parameterType="java.lang.Integer"
+		resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from customer
+		where id = #{id,jdbcType=INTEGER}
+	</select>
+
+	<select id="selectNext" resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from customer
+		where id > #{id,jdbcType=INTEGER}
+		and who_use=#{who_use,jdbcType=VARCHAR}
+		and is_common =0
+		limit 1
+	</select>
+
+	<select id="selectByPhone" parameterType="java.lang.String"
+		resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from customer
+		where phone = #{phone,jdbcType=VARCHAR} limit 1
+	</select>
+
+	<delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+		delete from
+		customer
+		where id = #{id,jdbcType=INTEGER}
+	</delete>
+
+	<delete id="deleteByWhoUse" parameterType="java.lang.String">
+		delete from customer
+		where who_use = #{who_use,jdbcType=VARCHAR}
+	</delete>
+
+	<delete id="deleteAllCommon">
+	<![CDATA[
+		delete from customer
+		where is_common=1 and in_common_time < date_add(now(), interval -7 day)
+		]]>
+	</delete>
+
+	<insert id="insert" parameterType="telemarketing.model.Customer">
+		insert into customer (id,
+		phone, cus_name,
+		id_person, address, who_use,
+		who_use_name,
+		who_get_time,
+		share_use,
+		share_use_name, share_get_time,who_up_down_id,
+		add_time,business_name,update_state_time,
+		remark, state,data_from)
+		values (#{id,jdbcType=INTEGER}, #{phone,jdbcType=VARCHAR},
+		#{cusName,jdbcType=VARCHAR},
+		#{idPerson,jdbcType=VARCHAR},
+		#{address,jdbcType=VARCHAR}, #{whoUse,jdbcType=VARCHAR},
+		#{whoUseName,jdbcType=VARCHAR}, #{whoGetTime,jdbcType=TIMESTAMP},
+		#{shareUse,jdbcType=VARCHAR},
+		#{shareUseName,jdbcType=VARCHAR}, #{shareGetTime,jdbcType=TIMESTAMP},
+		#{who_up_down_id,jdbcType=VARCHAR},
+		#{addTime,jdbcType=TIMESTAMP},
+		#{business_name,jdbcType=VARCHAR},
+		#{update_state_time,jdbcType=TIMESTAMP},
+		#{remark,jdbcType=VARCHAR}, #{state,jdbcType=TINYINT},
+		#{dataFrom,jdbcType=VARCHAR}
+		)
+	</insert>
+
+	<insert id="insertToBackup" parameterType="telemarketing.model.Customer">
+		insert into
+		customer_backup (id, phone, cus_name,
+		id_person, address, who_use,
+		who_use_name, who_get_time,
+		share_use,
+		share_use_name, share_get_time,who_up_down_id,
+		add_time,business_name,update_state_time,
+		remark, state,data_from)
+		values (#{id,jdbcType=INTEGER}, #{phone,jdbcType=VARCHAR},
+		#{cusName,jdbcType=VARCHAR},
+		#{idPerson,jdbcType=VARCHAR},
+		#{address,jdbcType=VARCHAR}, #{whoUse,jdbcType=VARCHAR},
+		#{whoUseName,jdbcType=VARCHAR}, #{whoGetTime,jdbcType=TIMESTAMP},
+		#{shareUse,jdbcType=VARCHAR},
+		#{shareUseName,jdbcType=VARCHAR},
+		#{shareGetTime,jdbcType=TIMESTAMP},
+		#{who_up_down_id,jdbcType=VARCHAR},
+		#{addTime,jdbcType=TIMESTAMP},
+		#{business_name,jdbcType=VARCHAR},
+		#{update_state_time,jdbcType=TIMESTAMP},
+		#{remark,jdbcType=VARCHAR},
+		#{state,jdbcType=TINYINT},
+		#{dataFrom,jdbcType=VARCHAR}
+		)
+	</insert>
+
+
+
+	<update id="updateByPrimaryKey" parameterType="telemarketing.model.Customer">
+		update customer
+		set phone = #{phone,jdbcType=VARCHAR},
+		cus_name =
+		#{cusName,jdbcType=VARCHAR},
+		id_person = #{idPerson,jdbcType=VARCHAR},
+		address = #{address,jdbcType=VARCHAR},
+		who_use =
+		#{whoUse,jdbcType=VARCHAR},
+		who_use_name =
+		#{whoUseName,jdbcType=VARCHAR},
+		who_get_time =
+		#{whoGetTime,jdbcType=TIMESTAMP},
+		who_up_down_id = #{who_up_down_id,jdbcType=VARCHAR},
+		share_use = #{shareUse,jdbcType=VARCHAR},
+		share_use_name = #{shareUseName,jdbcType=VARCHAR},
+		share_get_time = #{shareGetTime,jdbcType=TIMESTAMP},
+		add_time =
+		#{addTime,jdbcType=TIMESTAMP},
+		update_state_time = #{update_state_time,jdbcType=TIMESTAMP},
+		data_from = #{dataFrom,jdbcType=VARCHAR},
+		business_name = #{business_name,jdbcType=VARCHAR},
+		remark =
+		#{remark,jdbcType=VARCHAR},
+		state = #{state,jdbcType=TINYINT},
+		is_common=#{is_common,jdbcType=TINYINT},
+		state = #{state,jdbcType=TINYINT},
+		in_common_time = #{in_common_time,jdbcType=TIMESTAMP},
+		who_put_common = #{who_put_common,jdbcType=VARCHAR},
+		who_put_common_name = #{who_put_common_name,jdbcType=VARCHAR}
+		where id =
+		#{id,jdbcType=INTEGER}
+	</update>
+
+	<update id="updateState" parameterType="java.util.Map">
+		update customer
+		set state = #{state}
+		where id in
+		<foreach item="item" index="index" collection="list" open="("
+			separator="," close=")">
+			#{item}
+		</foreach>
+	</update>
+
+	<update id="updateWhoUse" parameterType="java.util.Map">
+		update customer
+		set who_use = #{who_use},
+		who_use_name=#{who_use_name},
+		who_get_time=now(),
+		who_up_down_id = #{who_up_down_id}
+		where id in
+		<foreach item="item" index="index" collection="list" open="("
+			separator="," close=")">
+			#{item}
+		</foreach>
+	</update>
+
+	<update id="updateToCommon" parameterType="java.util.Map">
+		update customer
+		set is_common = 1,
+		in_common_time=now(),
+		who_put_common =
+		#{who_put_common},
+		who_put_common_name = #{who_put_common_name}
+		where id
+		in
+		<foreach item="item" index="index" collection="list" open="("
+			separator="," close=")">
+			#{item}
+		</foreach>
+	</update>
+	
+	<update id="updateUpdownId" >
+		update customer
+		set  who_up_down_id= #{who_up_down_id}
+		where  who_use = #{who_use}
+	</update>
+	
+
+    <update id="recoveryCustomer" >
+		update customer
+		 set  recovery_from=who_use_name,
+		 who_use = #{who_use,jdbcType=VARCHAR},
+		 who_use_name = #{who_use_name,jdbcType=VARCHAR},
+		 who_get_time = #{who_get_time,jdbcType=TIMESTAMP},
+		 who_up_down_id = #{who_up_down_id,jdbcType=VARCHAR},
+		 has_recovery=1,
+		 recovery_time=now()
+		where is_common=0 and 
+		 who_use != #{who_use,jdbcType=VARCHAR} and 
+		 id in
+		<foreach item="item" index="index" collection="list" open="("
+            separator="," close=")">
+		  #{item,jdbcType=INTEGER}
+		</foreach>
+	</update>
+
+
+</mapper>

@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="telemarketing.repository.Pt_deptMapper">
+	<resultMap id="BaseResultMap" type="telemarketing.model.Pt_dept">
+		<id column="id" property="id" jdbcType="INTEGER" />
+		<result column="dept_name" property="deptName" jdbcType="VARCHAR" />
+		<result column="parent_id" property="parentId" jdbcType="INTEGER" />
+		<result column="up_down_id" property="upDownId" jdbcType="VARCHAR" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		id, dept_name, parent_id, up_down_id
+	</sql>
+	<select id="selectByPrimaryKey" resultMap="BaseResultMap"
+		parameterType="java.lang.Integer">
+		select
+		<include refid="Base_Column_List" />
+		from pt_dept
+		where id = #{id,jdbcType=INTEGER}
+	</select>
+	
+	<select id="searchMyDept" resultMap="BaseResultMap"
+		parameterType="java.lang.String" statementType="STATEMENT">
+		 <![CDATA[
+		 select * from pt_dept  where up_down_id like '%${upDownId}%' ]]>
+
+	</select>
+	
+	<select id="selectALL" resultMap="BaseResultMap">
+		SELECT t1.id, CONCAT(t2.dept_name, ' 下属  ', t1.dept_name) as
+		dept_name,t1.parent_id,t1.up_down_id
+		from pt_dept as t1
+		INNER JOIN pt_dept as t2
+		on t1.parent_id=t2.id   ORDER BY up_down_id
+
+	</select>
+
+	<delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+		delete from
+		pt_dept
+		where id = #{id,jdbcType=INTEGER}
+	</delete>
+	<insert id="insert" parameterType="telemarketing.model.Pt_dept"
+		useGeneratedKeys="true" keyProperty="id">
+		insert into pt_dept (dept_name,
+		parent_id,
+		up_down_id)
+		values (#{deptName,jdbcType=VARCHAR},
+		#{parentId,jdbcType=INTEGER},
+		#{upDownId,jdbcType=VARCHAR})
+	</insert>
+	<insert id="insertSelective" parameterType="telemarketing.model.Pt_dept">
+		insert into pt_dept
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="id != null">
+				id,
+			</if>
+			<if test="deptName != null">
+				dept_name,
+			</if>
+			<if test="parentId != null">
+				parent_id,
+			</if>
+			<if test="upDownId != null">
+				up_down_id,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="id != null">
+				#{id,jdbcType=INTEGER},
+			</if>
+			<if test="deptName != null">
+				#{deptName,jdbcType=VARCHAR},
+			</if>
+			<if test="parentId != null">
+				#{parentId,jdbcType=INTEGER},
+			</if>
+			<if test="upDownId != null">
+				#{upDownId,jdbcType=VARCHAR},
+			</if>
+		</trim>
+	</insert>
+	<update id="updateByPrimaryKeySelective" parameterType="telemarketing.model.Pt_dept">
+		update pt_dept
+		<set>
+			<if test="deptName != null">
+				dept_name = #{deptName,jdbcType=VARCHAR},
+			</if>
+			<if test="parentId != null">
+				parent_id = #{parentId,jdbcType=INTEGER},
+			</if>
+			<if test="upDownId != null">
+				up_down_id = #{upDownId,jdbcType=VARCHAR},
+			</if>
+		</set>
+		where id = #{id,jdbcType=INTEGER}
+	</update>
+	<update id="updateByPrimaryKey" parameterType="telemarketing.model.Pt_dept">
+		update pt_dept
+		set
+		dept_name = #{deptName,jdbcType=VARCHAR},
+		parent_id =
+		#{parentId,jdbcType=INTEGER},
+		up_down_id = #{upDownId,jdbcType=VARCHAR}
+		where id = #{id,jdbcType=INTEGER}
+	</update>
+</mapper>

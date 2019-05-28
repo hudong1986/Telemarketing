@@ -1,0 +1,198 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="telemarketing.repository.RemindMapper">
+	<resultMap id="BaseResultMap" type="telemarketing.model.Remind">
+		<id column="id" property="id" jdbcType="INTEGER" />
+		<result column="time_beg" property="timeBeg" jdbcType="TIMESTAMP" />
+		<result column="time_end" property="timeEnd" jdbcType="TIMESTAMP" />
+		<result column="topic" property="topic" jdbcType="VARCHAR" />
+		<result column="context" property="context" jdbcType="VARCHAR" />
+		<result column="user_name" property="userName" jdbcType="VARCHAR" />
+		<result column="user_id" property="userId" jdbcType="VARCHAR" />
+		<result column="cus_phone" property="cus_phone" jdbcType="VARCHAR" />
+		<result column="cus_name" property="cus_name" jdbcType="VARCHAR" />
+		<result column="up_down_id" property="upDownId" jdbcType="VARCHAR" />
+		<result column="remind_type" property="remindType" jdbcType="TINYINT" />
+		<result column="state" property="state" jdbcType="TINYINT" />
+		<result column="add_time" property="addTime" jdbcType="TIMESTAMP" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		id, time_beg, time_end, topic, context, user_name, user_id,
+		up_down_id,cus_phone,cus_name,
+		remind_type,
+		state,add_time
+	</sql>
+	<select id="searchBySql" resultMap="BaseResultMap"
+		parameterType="java.lang.String" statementType="STATEMENT">
+		 <![CDATA[${sql}]]>
+
+	</select>
+
+	<select id="selectUnRead" resultMap="BaseResultMap" statementType="STATEMENT">
+	<![CDATA[
+		SELECT * from remind WHERE
+		((remind.user_id='${userId}' and remind.remind_type=0) or (LOCATE(remind.up_down_id,'%${upDownId}%')>0 and
+		remind.remind_type=1))
+		and remind.state=0 and NOW()>=remind.time_beg AND NOW() <=remind.time_end
+		and
+		NOT EXISTS (SELECT remind_id FROM remindstate where remindstate.state=1
+		and remind.id=remindstate.remind_id and
+		remindstate.user_id='${userId}'
+		)
+	]]>
+
+	</select>
+
+	<select id="selectByPrimaryKey" resultMap="BaseResultMap"
+		parameterType="java.lang.Integer">
+		select
+		<include refid="Base_Column_List" />
+		from remind
+		where id = #{id,jdbcType=INTEGER}
+	</select>
+	<delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+		delete from remind
+		where id = #{id,jdbcType=INTEGER}
+	</delete>
+	<insert id="insert" parameterType="telemarketing.model.Remind">
+		insert into remind (id,
+		time_beg, time_end,
+		topic, context, user_name,
+		user_id,
+		cus_phone,
+		cus_name,
+	    up_down_id,
+		remind_type,
+		state,add_time)
+		values (#{id,jdbcType=INTEGER},
+		#{timeBeg,jdbcType=TIMESTAMP},
+		#{timeEnd,jdbcType=TIMESTAMP},
+		#{topic,jdbcType=VARCHAR}, #{context,jdbcType=VARCHAR},
+		#{userName,jdbcType=VARCHAR},
+		#{userId,jdbcType=VARCHAR},
+		#{cus_phone,jdbcType=VARCHAR},
+		#{cus_name,jdbcType=VARCHAR},
+		#{upDownId,jdbcType=VARCHAR},
+		#{remindType,jdbcType=TINYINT},
+		#{state,jdbcType=TINYINT},
+		#{addTime,jdbcType=TIMESTAMP})
+	</insert>
+	<insert id="insertSelective" parameterType="telemarketing.model.Remind">
+		insert into remind
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="id != null">
+				id,
+			</if>
+			<if test="timeBeg != null">
+				time_beg,
+			</if>
+			<if test="timeEnd != null">
+				time_end,
+			</if>
+			<if test="topic != null">
+				topic,
+			</if>
+			<if test="context != null">
+				context,
+			</if>
+			<if test="userName != null">
+				user_name,
+			</if>
+			<if test="userId != null">
+				user_id,
+			</if>
+			<if test="upDownId != null">
+				up_down_id,
+			</if>
+			<if test="remindType != null">
+				remind_type,
+			</if>
+			<if test="state != null">
+				state,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="id != null">
+				#{id,jdbcType=INTEGER},
+			</if>
+			<if test="timeBeg != null">
+				#{timeBeg,jdbcType=TIMESTAMP},
+			</if>
+			<if test="timeEnd != null">
+				#{timeEnd,jdbcType=TIMESTAMP},
+			</if>
+			<if test="topic != null">
+				#{topic,jdbcType=VARCHAR},
+			</if>
+			<if test="context != null">
+				#{context,jdbcType=VARCHAR},
+			</if>
+			<if test="userName != null">
+				#{userName,jdbcType=VARCHAR},
+			</if>
+			<if test="userId != null">
+				#{userId,jdbcType=VARCHAR},
+			</if>
+			<if test="upDownId != null">
+				#{upDownId,jdbcType=VARCHAR},
+			</if>
+			<if test="remindType != null">
+				#{remindType,jdbcType=TINYINT},
+			</if>
+			<if test="state != null">
+				#{state,jdbcType=TINYINT},
+			</if>
+		</trim>
+	</insert>
+	<update id="updateByPrimaryKeySelective" parameterType="telemarketing.model.Remind">
+		update remind
+		<set>
+			<if test="timeBeg != null">
+				time_beg = #{timeBeg,jdbcType=TIMESTAMP},
+			</if>
+			<if test="timeEnd != null">
+				time_end = #{timeEnd,jdbcType=TIMESTAMP},
+			</if>
+			<if test="topic != null">
+				topic = #{topic,jdbcType=VARCHAR},
+			</if>
+			<if test="context != null">
+				context = #{context,jdbcType=VARCHAR},
+			</if>
+			<if test="userName != null">
+				user_name = #{userName,jdbcType=VARCHAR},
+			</if>
+			<if test="userId != null">
+				user_id = #{userId,jdbcType=VARCHAR},
+			</if>
+			<if test="upDownId != null">
+				up_down_id = #{upDownId,jdbcType=VARCHAR},
+			</if>
+			<if test="remindType != null">
+				remind_type = #{remindType,jdbcType=TINYINT},
+			</if>
+			<if test="state != null">
+				state = #{state,jdbcType=TINYINT},
+			</if>
+		</set>
+		where id = #{id,jdbcType=INTEGER}
+	</update>
+	<update id="updateByPrimaryKey" parameterType="telemarketing.model.Remind">
+		update remind
+		set
+		time_beg = #{timeBeg,jdbcType=TIMESTAMP},
+		time_end =
+		#{timeEnd,jdbcType=TIMESTAMP},
+		topic = #{topic,jdbcType=VARCHAR},
+		context = #{context,jdbcType=VARCHAR},
+		user_name =
+		#{userName,jdbcType=VARCHAR},
+		user_id = #{userId,jdbcType=VARCHAR},
+		up_down_id = #{upDownId,jdbcType=VARCHAR},
+		remind_type =
+		#{remindType,jdbcType=TINYINT},
+		state = #{state,jdbcType=TINYINT}
+		where
+		id = #{id,jdbcType=INTEGER}
+	</update>
+</mapper>

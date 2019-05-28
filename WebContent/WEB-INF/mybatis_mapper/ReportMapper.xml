@@ -1,0 +1,216 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="telemarketing.repository.ReportMapper">
+	<resultMap id="BaseResultMap" type="telemarketing.model.BusiReport">
+		<result column="dateStr" jdbcType="VARCHAR" property="dateStr" />
+		<result column="dept_name" jdbcType="VARCHAR" property="deptName" />
+		<result column="business_name" jdbcType="VARCHAR" property="busiName" />
+		<result column="user_phone" jdbcType="VARCHAR" property="user_phone" />
+		<result column="user_name" jdbcType="VARCHAR" property="user_name" />
+		<result column="state" jdbcType="TINYINT" property="state" />
+		<result column="counts" jdbcType="INTEGER" property="count" />
+		<result column="up_down_id" jdbcType="VARCHAR" property="up_down_id" />
+		<result column="addtime" jdbcType="TIMESTAMP" property="addtime" />
+	</resultMap>
+	<resultMap id="BaseResultMap2" type="telemarketing.model.BusiReport">
+		<result column="dateStr_new" jdbcType="VARCHAR" property="dateStr" />
+		<result column="dept_name" jdbcType="VARCHAR" property="deptName" />
+		<result column="business_name" jdbcType="VARCHAR" property="busiName" />
+		<result column="user_phone" jdbcType="VARCHAR" property="user_phone" />
+		<result column="user_name" jdbcType="VARCHAR" property="user_name" />
+		<result column="state" jdbcType="TINYINT" property="state" />
+		<result column="counts" jdbcType="INTEGER" property="count" />
+		<result column="up_down_id" jdbcType="VARCHAR" property="up_down_id" />
+		<result column="addtime" jdbcType="TIMESTAMP" property="addtime" />
+	</resultMap>
+
+	<resultMap id="BaseResultMap3" type="telemarketing.model.TrackReport">
+		<result column="dateStr" jdbcType="VARCHAR" property="dateStr" />
+		<result column="dept_name" jdbcType="VARCHAR" property="dept_name" />
+		<result column="who_use" jdbcType="VARCHAR" property="who_use" />
+		<result column="who_use_name" jdbcType="VARCHAR" property="who_use_name" />
+		<result column="total_get" jdbcType="INTEGER" property="total_get" />
+		<result column="total_common" jdbcType="INTEGER" property="total_common" />
+		<result column="state1" jdbcType="INTEGER" property="state1" />
+		<result column="state2" jdbcType="INTEGER" property="state2" />
+		<result column="state3" jdbcType="INTEGER" property="state3" />
+		<result column="state4" jdbcType="INTEGER" property="state4" />
+		<result column="state5" jdbcType="INTEGER" property="state5" />
+	</resultMap>
+	
+	<resultMap id="BaseResultMap4" type="telemarketing.model.SoundStatics">
+		<result column="dateStr" jdbcType="VARCHAR" property="dateStr" />
+		<result column="dept_name" jdbcType="VARCHAR" property="deptName" />
+		<result column="user_name" jdbcType="VARCHAR" property="userName" />
+		<result column="direction" jdbcType="VARCHAR" property="direction" />
+		<result column="num" jdbcType="INTEGER" property="count" />
+		<result column="totalsec" jdbcType="INTEGER" property="totalLength" />
+		 
+	</resultMap>
+	
+
+	<select id="searchBySql" resultMap="BaseResultMap"
+		parameterType="java.lang.String" statementType="STATEMENT">
+		 <![CDATA[${sql}]]>
+
+	</select>
+	
+	<select id="searchSoundBySql" resultMap="BaseResultMap4"
+		parameterType="java.lang.String" statementType="STATEMENT">
+		 <![CDATA[${sql}]]>
+
+	</select>
+	
+	<select id="searchBusiByDate" resultMap="BaseResultMap">
+	<![CDATA[
+		SELECT
+		#{dateStr} as
+		dateStr,t2.dept_name,t1.who_use as user_phone,t1.who_use_name as user_name,t1.business_name,t1.state,count(*) as counts,t2.up_down_id,NOW() as addtime
+		from customer as t1 INNER JOIN pt_dept as t2
+		on t1.who_up_down_id=t2.up_down_id and t1.state!=0 where
+		t1.update_state_time BETWEEN #{dateStr} and '${dateStr} 23:59:59'
+		]]>
+		<if test="up_down_id != null ">
+			<![CDATA[and t2.up_down_id like '%${up_down_id}%' ]]>
+		</if>
+		<if test="user_name != null ">
+			<![CDATA[and t1.who_use_name like '%${user_name}%' ]]>
+		</if>
+		
+		GROUP BY t2.dept_name,t1.who_use_name,t1.business_name,t1.state
+
+	</select>
+
+	<select id="searchTrackReportByDate" resultMap="BaseResultMap3">
+	<![CDATA[
+	SELECT #{dateStr} as dateStr,dept_name, who_use,who_use_name,count(*) as total_get,sum(is_common) as total_common,
+sum(CASE state when 1 then 1 else 0 END) as state1,
+sum(CASE state when 2 then 1 else 0 END) as state2,
+sum(CASE state when 3 then 1 else 0 END) as state3,
+sum(CASE state when 4 then 1 else 0 END) as state4,
+sum(CASE state when 5 then 1 else 0 END) as state5,
+sum(CASE state when 11 then 1 else 0 END) as state11
+from customer inner join pt_dept on pt_dept.up_down_id=customer.who_up_down_id 
+WHERE who_get_time BETWEEN #{dateStr} and '${dateStr} 23:59:59'  
+		]]>
+		<if test="up_down_id != null ">
+			<![CDATA[and who_up_down_id like '%${up_down_id}%' ]]>
+		</if>
+		
+		<if test="user_name != null ">
+			<![CDATA[and who_use_name like '%${user_name}%' ]]>
+		</if>
+		
+		GROUP BY pt_dept.dept_name,who_use
+
+	</select>
+
+
+	<select id="selectMaxDate" resultType="java.util.Date">
+		SELECT dateStr from BusiReport
+		order by id desc limit 1
+
+	</select>
+	
+	<select id="selectSoundMaxDate" resultType="java.util.Date">
+		SELECT dateStr from soundreport
+		order by id desc limit 1
+
+	</select>
+
+	<select id="searchGroupByDate" resultMap="BaseResultMap">
+ <![CDATA[
+		SELECT
+		DATE_FORMAT(dateStr,'%Y-%m-%d') as dateStr,dept_name,user_phone,user_name,business_name, state, sum(counts) as counts from BusiReport
+		where dateStr>=#{date1} and dateStr<=#{date2}
+		 and up_down_id like '%${up_down_id}%' ]]>
+		<if test="business_name != '-1' ">
+			and business_name=#{business_name}
+		</if>
+		<if test="state != -1">
+			and state=#{state}
+		</if>
+		
+		<if test="up_down_id != null ">
+			<![CDATA[and up_down_id like '%${up_down_id}%' ]]>
+		</if>
+		<if test="user_name != null ">
+			<![CDATA[and user_name like '%${user_name}%' ]]>
+		</if>
+		
+
+		GROUP by dateStr,dept_name,user_phone,user_name,business_name,state
+
+	</select>
+
+	<select id="searchGroupByMonth" resultMap="BaseResultMap2">
+<![CDATA[
+		SELECT
+		DATE_FORMAT(dateStr,'%Y-%m') as dateStr_new, dept_name,user_phone,user_name,business_name,state, sum(counts) as counts
+		from BusiReport
+		where dateStr>=#{date1} and dateStr<=#{date2}
+		 and up_down_id like '%${up_down_id}%' ]]>
+		<if test="business_name != '-1'">
+			and business_name=#{business_name}
+		</if>
+		<if test="state != -1">
+			and state=#{state}
+		</if>
+		<if test="up_down_id != null ">
+			<![CDATA[and up_down_id like '%${up_down_id}%' ]]>
+		</if>
+		<if test="user_name != null ">
+			<![CDATA[and user_name like '%${user_name}%' ]]>
+		</if>
+		
+		GROUP by dateStr_new,dept_name,user_phone,user_name,business_name,state
+
+	</select>
+
+	<insert id="insert" parameterType="telemarketing.model.BusiReport">
+		insert into BusiReport (id,
+		dateStr,user_phone,user_name, dept_name,up_down_id,business_name,state,counts,addtime
+		)
+		values (#{id,jdbcType=INTEGER}, #{dateStr,jdbcType=INTEGER},
+		#{user_phone,jdbcType=INTEGER},
+		#{user_name,jdbcType=INTEGER},
+		#{deptName,jdbcType=VARCHAR},#{up_down_id,jdbcType=VARCHAR},
+		#{busiName,jdbcType=VARCHAR}, #{state,jdbcType=TINYINT},
+		#{count,jdbcType=INTEGER},
+		#{addtime,jdbcType=TIMESTAMP}
+		)
+	</insert>
+
+	<insert id="insertByDate" parameterType="java.lang.String">
+		insert into BusiReport (dateStr,user_phone,user_name,
+		dept_name,up_down_id,business_name,state,counts,addtime
+		)
+		<![CDATA[
+		SELECT
+		#{dateStr} as
+		dateStr,t1.who_use,t1.who_use_name, t2.dept_name,t2.up_down_id,t1.business_name,t1.state,count(*) as totalCount,NOW() as addtime
+		from customer as t1 INNER JOIN pt_dept as t2
+		on t1.who_up_down_id=t2.up_down_id and t1.state!=0 where
+		t1.update_state_time BETWEEN #{dateStr} and '${dateStr} 23:59:59'
+		GROUP BY t2.dept_name,t1.business_name,t1.state ]]>
+	</insert>
+	
+	
+	<insert id="insertSoundByDate" parameterType="java.lang.String">
+		insert into soundreport (dateStr,user_phone,user_name,
+		dept_name,up_down_id,direction,num,totalsec,addtime
+		)
+		<![CDATA[
+		SELECT
+		#{dateStr} as
+		dateStr,sound_record.user_id,sound_record.user_name,pt_dept.dept_name,
+        sound_record.up_down_id,sound_record.direction, 
+		count(*) as count,sum(sound_record.sound_length) as totalLength,NOW() as addtime
+		from sound_record INNER JOIN pt_dept on sound_record.up_down_id=pt_dept.up_down_id
+		where
+		sound_record.add_time BETWEEN #{dateStr} and '${dateStr} 23:59:59'
+		GROUP BY pt_dept.dept_name,sound_record.user_name,sound_record.direction ]]>
+	</insert>
+
+
+</mapper>

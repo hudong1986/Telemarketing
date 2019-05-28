@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="telemarketing.repository.TrackRecordMapper">
+	<resultMap id="BaseResultMap" type="telemarketing.model.TrackRecord">
+		<id column="id" property="id" jdbcType="INTEGER" />
+		<result column="customer_id" property="customerId" jdbcType="INTEGER" />
+		<result column="user_id" property="userId" jdbcType="VARCHAR" />
+		<result column="user_name" property="userName" jdbcType="VARCHAR" />
+		<result column="content" property="content" jdbcType="VARCHAR" />
+		<result column="add_time" property="addTime" jdbcType="TIMESTAMP" />
+	</resultMap>
+
+	<resultMap id="BaseResultMap2" type="telemarketing.model.TrackRecord"
+		extends="BaseResultMap">
+		<result column="cus_phone" property="cus_phone" jdbcType="VARCHAR" />
+		<result column="cus_name" property="cus_name" jdbcType="VARCHAR" />
+	</resultMap>
+
+	<sql id="Base_Column_List">
+		id, customer_id, user_id, user_name, content, add_time
+	</sql>
+	<select id="selectByPrimaryKey" resultMap="BaseResultMap"
+		parameterType="java.lang.Integer">
+		select
+		<include refid="Base_Column_List" />
+		from track_record
+		where id = #{id,jdbcType=INTEGER}
+	</select>
+
+	<select id="searchBySql" resultMap="BaseResultMap2"
+		parameterType="java.lang.String" statementType="STATEMENT">
+		 <![CDATA[${sql}]]>
+
+	</select>
+
+	<select id="selectByCustomerId" resultMap="BaseResultMap"
+		parameterType="java.lang.Integer">
+		select
+		<include refid="Base_Column_List" />
+		from track_record
+		where customer_id = #{id,jdbcType=INTEGER}
+	</select>
+
+	<delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+		delete from
+		track_record
+		where id = #{id,jdbcType=INTEGER}
+	</delete>
+	<delete id="deleteByWhoUse" parameterType="java.lang.String">
+		DELETE FROM
+		track_record
+		WHERE customer_id IN
+		(SELECT id from customer where
+		who_use=#{who_use,jdbcType=VARCHAR})
+	</delete>
+
+	<delete id="deleteAllCommonTrack">
+	<![CDATA[
+		DELETE FROM track_record
+		WHERE
+		customer_id IN
+		(SELECT id from customer where is_common=1 and
+		in_common_time < date_add(now(), interval -7 day))
+		]]>
+	</delete>
+
+	<delete id="deleteByCustomer" parameterType="java.lang.Integer">
+		delete from
+		track_record
+		where customer_id = #{id,jdbcType=INTEGER}
+	</delete>
+
+	<insert id="insert" parameterType="telemarketing.model.TrackRecord">
+		insert into track_record (id,
+		customer_id, user_id,
+		user_name, content, add_time
+		)
+		values
+		(#{id,jdbcType=INTEGER}, #{customerId,jdbcType=INTEGER},
+		#{userId,jdbcType=VARCHAR},
+		#{userName,jdbcType=VARCHAR},
+		#{content,jdbcType=VARCHAR}, #{addTime,jdbcType=TIMESTAMP}
+		)
+	</insert>
+	<insert id="insertSelective" parameterType="telemarketing.model.TrackRecord">
+		insert into track_record
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="id != null">
+				id,
+			</if>
+			<if test="customerId != null">
+				customer_id,
+			</if>
+			<if test="userId != null">
+				user_id,
+			</if>
+			<if test="userName != null">
+				user_name,
+			</if>
+			<if test="content != null">
+				content,
+			</if>
+			<if test="addTime != null">
+				add_time,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="id != null">
+				#{id,jdbcType=INTEGER},
+			</if>
+			<if test="customerId != null">
+				#{customerId,jdbcType=INTEGER},
+			</if>
+			<if test="userId != null">
+				#{userId,jdbcType=VARCHAR},
+			</if>
+			<if test="userName != null">
+				#{userName,jdbcType=VARCHAR},
+			</if>
+			<if test="content != null">
+				#{content,jdbcType=VARCHAR},
+			</if>
+			<if test="addTime != null">
+				#{addTime,jdbcType=TIMESTAMP},
+			</if>
+		</trim>
+	</insert>
+	<update id="updateByPrimaryKeySelective" parameterType="telemarketing.model.TrackRecord">
+		update track_record
+		<set>
+			<if test="customerId != null">
+				customer_id = #{customerId,jdbcType=INTEGER},
+			</if>
+			<if test="userId != null">
+				user_id = #{userId,jdbcType=VARCHAR},
+			</if>
+			<if test="userName != null">
+				user_name = #{userName,jdbcType=VARCHAR},
+			</if>
+			<if test="content != null">
+				content = #{content,jdbcType=VARCHAR},
+			</if>
+			<if test="addTime != null">
+				add_time = #{addTime,jdbcType=TIMESTAMP},
+			</if>
+		</set>
+		where id = #{id,jdbcType=INTEGER}
+	</update>
+	<update id="updateByPrimaryKey" parameterType="telemarketing.model.TrackRecord">
+		update
+		track_record
+		set customer_id = #{customerId,jdbcType=INTEGER},
+		user_id =
+		#{userId,jdbcType=VARCHAR},
+		user_name = #{userName,jdbcType=VARCHAR},
+		content = #{content,jdbcType=VARCHAR},
+		add_time =
+		#{addTime,jdbcType=TIMESTAMP}
+		where id = #{id,jdbcType=INTEGER}
+	</update>
+</mapper>

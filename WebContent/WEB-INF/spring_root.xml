@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:jdbc="http://www.springframework.org/schema/jdbc" xmlns:jee="http://www.springframework.org/schema/jee"
+	xmlns:lang="http://www.springframework.org/schema/lang" xmlns:mvc="http://www.springframework.org/schema/mvc"
+	xmlns:mybatis-spring="http://mybatis.org/schema/mybatis-spring"
+	xmlns:util="http://www.springframework.org/schema/util" xmlns:tx="http://www.springframework.org/schema/tx"
+	xsi:schemaLocation="http://www.springframework.org/schema/jdbc http://www.springframework.org/schema/jdbc/spring-jdbc-3.0.xsd
+		http://www.springframework.org/schema/jee http://www.springframework.org/schema/jee/spring-jee-3.0.xsd
+		http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-3.0.xsd
+		http://mybatis.org/schema/mybatis-spring http://mybatis.org/schema/mybatis-spring-1.2.xsd
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd
+		http://www.springframework.org/schema/lang http://www.springframework.org/schema/lang/spring-lang-3.0.xsd
+		http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-3.0.xsd
+		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.1.xsd
+		http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-3.0.xsd">
+
+	<!-- spring和MyBatis完美整合，不需要mybatis的配置映射文件 -->
+	<bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+		<property name="dataSource" ref="dataSource" />
+		<!--configLocation属性指定mybatis的核心配置文件 -->
+		<property name="configLocation" value="/WEB-INF/mybatis_config.xml" />
+		<!-- 自动扫描mapping.xml文件 -->
+		<property name="mapperLocations" value="/WEB-INF/mybatis_mapper/*.xml" />
+	</bean>
+
+	<!-- DAO接口所在包名，Spring会自动查找其下的类 -->
+	<bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+		<property name="basePackage" value="telemarketing.repository" />
+		<property name="sqlSessionFactoryBeanName" value="sqlSessionFactory" />
+	</bean>
+
+	<!-- (事务管理)transaction manager, use JtaTransactionManager for global tx -->
+	<bean id="transactionManager"
+		class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+		<property name="dataSource" ref="dataSource" />
+	</bean>
+
+	<tx:annotation-driven transaction-manager="transactionManager" />
+	<!-- 导入属性文件以便代码中方便通过SPEL表达式获取数据 -->
+	<util:properties id="sysProperties" location="classpath:system.properties" />
+	<!-- 组件扫描改为java代码配置 -->
+	<!-- <context:component-scan base-package="com.csrd.earthquake.serviceImpl,com.csrd.earthquake.util" 
+		/> -->
+	<!-- 动态切换数据源 -->
+    <bean id="dataSourceExchange" class="telemarketing.db.MyDataSourceAspect"/>  
+	<tx:advice id="txAdvice" transaction-manager="transactionManager">
+		<tx:attributes>
+			<tx:method name="insert*" propagation="NESTED"
+				rollback-for="Exception" />
+			<tx:method name="add*" propagation="NESTED" rollback-for="Exception" />
+			<tx:method name="update*" propagation="NESTED"
+				rollback-for="Exception" />
+			<tx:method name="modify*" propagation="NESTED"
+				rollback-for="Exception" />
+			<tx:method name="edit*" propagation="NESTED" rollback-for="Exception" />
+			<tx:method name="del*" propagation="NESTED" rollback-for="Exception" />
+			<tx:method name="save*" propagation="NESTED" rollback-for="Exception" />
+			<tx:method name="send*" propagation="NESTED" rollback-for="Exception" />
+			<tx:method name="get*" read-only="true" />
+			<tx:method name="find*" read-only="true" />
+			<tx:method name="query*" read-only="true" />
+			<tx:method name="search*" read-only="true" />
+			<tx:method name="select*" read-only="true" />
+			<tx:method name="count*" read-only="true" />
+		</tx:attributes>
+	</tx:advice>
+	<aop:config>
+		<aop:pointcut id="service"
+			expression="execution(* telemarketing..*.service.*.*(..))" />
+		<!-- 关键配置，切换数据源一定要比持久层代码更先执行（事务也算持久层代码） -->
+		<aop:advisor advice-ref="txAdvice" pointcut-ref="service"
+			order="2" />
+		<aop:advisor advice-ref="dataSourceExchange" pointcut-ref="service"
+			order="1" />
+	</aop:config>
+</beans>

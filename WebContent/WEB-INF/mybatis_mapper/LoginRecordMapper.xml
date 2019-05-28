@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="telemarketing.repository.LoginRecordMapper" >
+  <resultMap id="BaseResultMap" type="telemarketing.model.LoginRecord" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="user_phone" property="userPhone" jdbcType="VARCHAR" />
+    <result column="user_name" property="userName" jdbcType="VARCHAR" />
+    <result column="up_down_id" property="upDownId" jdbcType="VARCHAR" />
+    <result column="dept_name" property="deptName" jdbcType="VARCHAR" />
+    <result column="login_time" property="loginTime" jdbcType="TIMESTAMP" />
+    <result column="login_ip" property="loginIp" jdbcType="VARCHAR" />
+    <result column="remark" property="remark" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, user_phone, user_name, up_down_id, dept_name, login_time, login_ip, remark
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from login_record
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  
+  <select id="searchBySql" resultMap="BaseResultMap"
+		parameterType="java.util.Map" statementType="STATEMENT">
+		 <![CDATA[${sql}]]>
+
+	</select>
+	
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from login_record
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="telemarketing.model.LoginRecord" >
+    insert into login_record (id, user_phone, user_name, 
+      up_down_id, dept_name, login_time, 
+      login_ip, remark)
+    values (#{id,jdbcType=INTEGER}, #{userPhone,jdbcType=VARCHAR}, #{userName,jdbcType=VARCHAR}, 
+      #{upDownId,jdbcType=VARCHAR}, #{deptName,jdbcType=VARCHAR}, #{loginTime,jdbcType=TIMESTAMP}, 
+      #{loginIp,jdbcType=VARCHAR}, #{remark,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="telemarketing.model.LoginRecord" >
+    insert into login_record
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="userPhone != null" >
+        user_phone,
+      </if>
+      <if test="userName != null" >
+        user_name,
+      </if>
+      <if test="upDownId != null" >
+        up_down_id,
+      </if>
+      <if test="deptName != null" >
+        dept_name,
+      </if>
+      <if test="loginTime != null" >
+        login_time,
+      </if>
+      <if test="loginIp != null" >
+        login_ip,
+      </if>
+      <if test="remark != null" >
+        remark,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="userPhone != null" >
+        #{userPhone,jdbcType=VARCHAR},
+      </if>
+      <if test="userName != null" >
+        #{userName,jdbcType=VARCHAR},
+      </if>
+      <if test="upDownId != null" >
+        #{upDownId,jdbcType=VARCHAR},
+      </if>
+      <if test="deptName != null" >
+        #{deptName,jdbcType=VARCHAR},
+      </if>
+      <if test="loginTime != null" >
+        #{loginTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="loginIp != null" >
+        #{loginIp,jdbcType=VARCHAR},
+      </if>
+      <if test="remark != null" >
+        #{remark,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="telemarketing.model.LoginRecord" >
+    update login_record
+    <set >
+      <if test="userPhone != null" >
+        user_phone = #{userPhone,jdbcType=VARCHAR},
+      </if>
+      <if test="userName != null" >
+        user_name = #{userName,jdbcType=VARCHAR},
+      </if>
+      <if test="upDownId != null" >
+        up_down_id = #{upDownId,jdbcType=VARCHAR},
+      </if>
+      <if test="deptName != null" >
+        dept_name = #{deptName,jdbcType=VARCHAR},
+      </if>
+      <if test="loginTime != null" >
+        login_time = #{loginTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="loginIp != null" >
+        login_ip = #{loginIp,jdbcType=VARCHAR},
+      </if>
+      <if test="remark != null" >
+        remark = #{remark,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="telemarketing.model.LoginRecord" >
+    update login_record
+    set user_phone = #{userPhone,jdbcType=VARCHAR},
+      user_name = #{userName,jdbcType=VARCHAR},
+      up_down_id = #{upDownId,jdbcType=VARCHAR},
+      dept_name = #{deptName,jdbcType=VARCHAR},
+      login_time = #{loginTime,jdbcType=TIMESTAMP},
+      login_ip = #{loginIp,jdbcType=VARCHAR},
+      remark = #{remark,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>

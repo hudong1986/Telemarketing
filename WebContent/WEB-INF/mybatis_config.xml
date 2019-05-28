@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE configuration PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+
+	<settings>
+		<!-- 打开延迟加载的开关 -->
+		<setting name="lazyLoadingEnabled" value="true"  />
+		<!-- 将积极加载改为消息加载即按需加载 -->
+		<setting name="aggressiveLazyLoading" value="false" />
+	</settings>	
+	
+	<typeAliases>
+		<typeAlias alias="Business_type" type="telemarketing.model.Business_type" />
+		<typeAlias alias="Customer" type="telemarketing.model.Customer" />
+		<typeAlias alias="Pt_dept" type="telemarketing.model.Pt_dept" />
+		<typeAlias alias="Pt_role" type="telemarketing.model.Pt_role" />
+		<typeAlias alias="Pt_user" type="telemarketing.model.Pt_user" />
+
+	</typeAliases>
+	
+</configuration>
